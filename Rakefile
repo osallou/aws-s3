@@ -1,9 +1,8 @@
 require 'rubygems'
 require 'rake'
 require 'rake/testtask'
-require 'rake/rdoctask'
-require 'rake/packagetask'
-require 'rake/gempackagetask'
+require 'rdoc/task'
+require 'rubygems/package_task'
 
 require File.dirname(__FILE__) + '/lib/aws/s3'
 
@@ -29,7 +28,7 @@ namespace :doc do
     rdoc.rdoc_files.include('lib/**/*.rb')
   end
   
-  task :rdoc => 'doc:readme'
+  task :rdoc
   
   task :refresh => :rerdoc do
     system 'open doc/index.html'
@@ -58,16 +57,16 @@ end
 
 namespace :dist do  
   spec = Gem::Specification.new do |s|
-    s.name              = 'aws-s3'
+    s.name              = 'mb-aws-s3'
     s.version           = Gem::Version.new(AWS::S3::Version)
-    s.summary           = "Client library for Amazon's Simple Storage Service's REST API"
+    s.summary           = "Client library for Amazon's Simple Storage Service's REST API, fork from marcel/aws-s3 to support Walrus "
     s.description       = s.summary
     s.email             = 'marcel@vernix.org'
     s.author            = 'Marcel Molina Jr.'
     s.has_rdoc          = true
     s.extra_rdoc_files  = %w(README COPYING INSTALL)
-    s.homepage          = 'http://amazon.rubyforge.org'
-    s.rubyforge_project = 'amazon'
+    s.homepage          = 'https://github.com/osallou/aws-s3'
+    s.rubyforge_project = 'rubygems'
     s.files             = FileList['Rakefile', 'lib/**/*.rb', 'bin/*', 'support/**/*.rb']
     s.executables       << 's3sh'
     s.test_files        = Dir['test/**/*']
@@ -81,8 +80,8 @@ namespace :dist do
   end
     
   # Regenerate README before packaging
-  task :package => 'doc:readme'
-  Rake::GemPackageTask.new(spec) do |pkg|
+  task :package
+  Gem::PackageTask.new(spec) do |pkg|
     pkg.need_tar_gz = true
     pkg.package_files.include('{lib,script,test,support}/**/*')
     pkg.package_files.include('README')
